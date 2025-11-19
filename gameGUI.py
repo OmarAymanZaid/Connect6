@@ -41,23 +41,26 @@ class GameGUI:
 
 
     def logic(self, row, col):
-        if self.game_logic.is_valid_move(row, col):
-            self.place_piece(row, col)
+        if not self.game_logic.is_valid_move(row, col):
+            return  # ignore invalid clicks
 
-            if self.game_logic.check_win(row, col):
-                self.declare_winner()
-                return
+        # Place the user's stone
+        self.place_piece(row, col)
 
-            # Check draw
-            if self.game_logic.check_draw():
-                messagebox.showinfo("Draw", "The game is a draw!")
-                return
+        # Check for win
+        if self.game_logic.check_win(row, col):
+            self.declare_winner()
+            return
 
-            self.game_logic.moves_made += 1
+        # Check for draw
+        if self.game_logic.check_draw():
+            messagebox.showinfo("Draw", "The game is a draw!")
+            return
 
-            # Switch player if max moves reached
-            if self.game_logic.moves_made >= self.game_logic.max_moves_per_turn:
-                self.game_logic.switch_player()
+        # If the player has placed 2 stones, switch player
+        if self.game_logic.moves_made >= self.game_logic.max_moves_per_turn:
+            self.moves_made_this_turn = 0
+            self.game_logic.switch_player()
 
             # AI turn
             if self.mode != "pvp" and self.game_logic.current_player == 2:

@@ -3,8 +3,6 @@ import time
 from itertools import combinations
 from board import Board
 
-start_time = time.time()
-
 def heuristic_1(board, player, opponent):
     """
     Offensive Heuristic:

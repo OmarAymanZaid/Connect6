@@ -1,6 +1,6 @@
 import random
 from board import Board
-from heuristics import heuristic_move
+from algorithms import heuristic_move
 
 class GameLogic:
     def __init__(self, mode, user_board_size):
