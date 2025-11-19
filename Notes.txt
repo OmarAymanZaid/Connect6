@@ -1,0 +1,8 @@
+- We put the stones on the intersections, not the squares. This means modelling the game as an NxN board is not accurate. We should model it as (N+1)X(N+1) board, where the squares maps to intersections or corners, not the squares themselves. I am not sure if we still can model it as NxN and then handle the intersection thing later.
+
+- Heuristic functions are NOT standalone algorithms. They are components used inside search algorithms. A heuristic is an evaluation function, not a solver.
+
+- Why didn't he consider the count being one ? In the conditions I mean.
+
+===========
+directions
