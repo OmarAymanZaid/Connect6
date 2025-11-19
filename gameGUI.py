@@ -98,40 +98,44 @@ class UI:
         self.root.title("Connect 6")
         self.root.geometry("650x600")
 
+
         # Title label
-        self.title_label = tk.Label(self.root, text="Connect6", font=("Courier", 25, "bold"))
-        self.title_label.grid(row=0, column=1, pady=20)
+        self.title_label = tk.Label(self.root, text="Connect6", font=("Courier", 30, "bold"), fg="#1a73e8")
+        self.title_label.grid(row=0, column=0, columnspan=4, pady=(30, 20))
 
         # Board size label + entry
-        self.board_size_label = tk.Label(self.root, text="Board size:", font=("Courier", 20))
-        self.board_size_label.grid(row=1, column=0, padx=10, pady=10)
+        self.board_size_label = tk.Label(self.root, text="Board size:", font=("Courier", 18))
+        self.board_size_label.grid(row=1, column=0, padx=10, pady=10, sticky="e")
 
-        self.board_entry = tk.Entry(self.root, width=21, font=("Courier", 15))
-        self.board_entry.grid(row=1, column=1, padx=10)
+        self.board_entry = tk.Entry(self.root, width=15, font=("Courier", 16))
+        self.board_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
 
-        self.enter_button = tk.Button(self.root, text="Enter", font=("Courier", 15), command=self.print_board_size)
-        self.enter_button.grid(row=1, column=2, padx=10)
+        self.enter_button = tk.Button(self.root, text="Set", font=("Courier", 14, "bold"), bg="#4CAF50", fg="white", command=self.print_board_size)
+        self.enter_button.grid(row=1, column=2, padx=10, pady=10)
 
         # Game mode buttons
-        self.pvp_button = tk.Button(self.root, text="PVP", font=("Courier", 15), command=self.start_pvp)
-        self.pvp_button.grid(row=3, column=1, pady=20)
+        self.pvp_button = tk.Button(self.root, text="PVP", font=("Courier", 15, "bold"), bg="#f4b400", fg="white", width=15, command=self.start_pvp)
+        self.pvp_button.grid(row=2, column=0, columnspan=3, pady=(20, 15))
 
-        # AI buttons
-        self.minimax_button = tk.Button(self.root, text="AI Minimax", font=("Courier", 15), command=self.ai_MiniMax)
-        self.minimax_button.grid(row=4, column=0, pady=20)
+        # AI buttons (organized in a grid)
+        ai_button_style = {"font": ("Courier", 14, "bold"), "width": 15, "bg": "#1a73e8", "fg": "white", "padx": 5, "pady": 5}
 
-        self.alpha_beta_button = tk.Button(self.root, text="AI AlphaBeta", font=("Courier", 15), command=self.ai_AlphBeta)
-        self.alpha_beta_button.grid(row=4, column=1, pady=20)
+        self.minimax_button = tk.Button(self.root, text="AI Minimax", command=self.ai_MiniMax, **ai_button_style)
+        self.minimax_button.grid(row=3, column=0, pady=10, padx=5)
 
-        self.heuristic_button = tk.Button(self.root, text="AI Heuristic", font=("Courier", 15), command=self.ai_Heuristic)
-        self.heuristic_button.grid(row=4, column=2, pady=20)
+        self.alpha_beta_button = tk.Button(self.root, text="AI AlphaBeta", command=self.ai_AlphBeta, **ai_button_style)
+        self.alpha_beta_button.grid(row=3, column=1, pady=10, padx=5)
 
-        self.heuristic_button = tk.Button(self.root, text="AI Heuristic2", font=("Courier", 15), command=self.ai_Heuristic2)
-        self.heuristic_button.grid(row=4, column=2, pady=20)
+        self.heuristic_button = tk.Button(self.root, text="AI Heuristic", command=self.ai_Heuristic, **ai_button_style)
+        self.heuristic_button.grid(row=3, column=2, pady=10, padx=5)
+
+        self.heuristic2_button = tk.Button(self.root, text="AI Heuristic2", command=self.ai_Heuristic2, **ai_button_style)
+        self.heuristic2_button.grid(row=4, column=0, columnspan=3, pady=(10, 20))
 
         # Credits button
-        self.credits_button = tk.Button(self.root, text="Credits", font=("Courier", 15), command=self.credits)
-        self.credits_button.grid(row=5, column=1, pady=20)
+        self.credits_button = tk.Button(self.root, text="Credits", font=("Courier", 14, "bold"), bg="#d93025", fg="white", width=15, command=self.credits)
+        self.credits_button.grid(row=5, column=0, columnspan=3, pady=(10, 30))
+
 
 
     def print_board_size(self):
