@@ -3,8 +3,6 @@ from board import Board
 from itertools import combinations
 import traceback
 
-
-
 def heuristics1(board, player, opponent):
     """
     Offensive Heuristic:
@@ -230,7 +228,7 @@ def get_top_single_moves(board, possible_moves, player, opponent, heuristic_func
     scored.sort(key=lambda x: x[1], reverse=True)
     return [m for m, _ in scored[:top_k]]
 
-def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alpha, beta, heuristic, top_k=8):
+def minimax_connect6(board, depth, is_maximizing, current_player, opponent,alpha, beta, heuristic, top_k=8, use_alpha_beta=True):
     """
     Safer minimax:
       - heuristic: function or string key (resolved)
@@ -293,25 +291,22 @@ def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alph
                 best_move = moves
             beta = min(beta, best_score)
 
-        if beta <= alpha:
+        if use_alpha_beta and beta <= alpha:
             break
 
     return best_score, best_move
 
 
-def heuristic_move(board, heuristic):
-    """Gets the AI's move for Connect6 (two stones per turn)."""
-    current_player = 2
-    opponent = 1
-
+def heuristic_move(board, heuristic, use_alpha_beta=True):
     _, best_move = minimax_connect6(
         board.board,
         depth=2,
         is_maximizing=True,
-        current_player=current_player,
-        opponent=opponent,
+        current_player=2,
+        opponent=1,
         alpha=-math.inf,
         beta=math.inf,
-        heuristic=heuristic
+        heuristic=heuristic,
+        use_alpha_beta=use_alpha_beta
     )
     return best_move

@@ -29,8 +29,12 @@ class GameLogic:
             self.moves_made = 0
 
     def ai_plays(self):
-        if self.mode == "heuristics2":
-            best_move = heuristic_move(self.board, self.mode)   # returns tuple of 1 or 2 moves
+        if self.mode == "heuristics1":
+            best_move = heuristic_move(self.board, self.mode, False) # False turns alphabeta off
+        
+        elif self.mode == "heuristics2":
+            best_move = heuristic_move(self.board, self.mode, False) # False turns alphabeta off
+
         else:
             best_move = None
 
