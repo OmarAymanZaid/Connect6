@@ -42,28 +42,27 @@ class GameGUI:
 
     def logic(self, row, col):
         if not self.game_logic.is_valid_move(row, col):
-            return  # ignore invalid clicks
+            return
 
-        # Place the user's stone
+        # Place player's stone
         self.place_piece(row, col)
 
-        # Check for win
+        # Check for win or draw after placing
         if self.game_logic.check_win(row, col):
             self.declare_winner()
             return
 
-        # Check for draw
         if self.game_logic.check_draw():
             self.declare_draw()
             return
 
-        # If the player has placed 2 stones, switch player
+        # If user placed two stones -> switch to AI
         if self.game_logic.moves_made >= self.game_logic.max_moves_per_turn:
             self.game_logic.switch_player()
 
-            # AI turn
             if self.game_logic.current_player == 2:
                 self.handle_ai_turn()
+
 
     def place_piece(self, row, col):
         self.game_logic.place_piece(row, col)
@@ -73,21 +72,20 @@ class GameGUI:
         self.canvas.create_oval(x1, y1, x2, y2, fill=color)
 
     def handle_ai_turn(self):
-        for _ in range(self.game_logic.max_moves_per_turn):
-            row, col = self.game_logic.ai_plays()
-            if row is not None and col is not None:
+        moves = self.game_logic.ai_plays()
 
-                self.place_piece(row, col)
+        for (row, col) in moves:
+            self.place_piece(row, col)
 
-                # Check for win
-                if self.game_logic.check_win(row, col):
-                    self.declare_winner()
-                    return
-                
-                # Check for draw
-                if self.game_logic.check_draw():
-                    self.declare_draw()
-                    return    
+            # Check win
+            if self.game_logic.check_win(row, col):
+                self.declare_winner()
+                return
+
+            # Check draw
+            if self.game_logic.check_draw():
+                self.declare_draw()
+                return
 
         # Switch back to player 1
         self.game_logic.switch_player()

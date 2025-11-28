@@ -1,7 +1,8 @@
 import math
-import time
-from itertools import combinations
 from board import Board
+from itertools import combinations
+import traceback
+
 
 
 def heuristics1(board, player, opponent):
@@ -202,37 +203,83 @@ def get_possible_moves(board):
     board_size = len(board)
     return [(r, c) for r in range(board_size) for c in range(board_size) if board[r][c] == 0]
 
+# Allow heuristic to be either function or string key
+def resolve_heuristic(heuristic):
+    if callable(heuristic):
+        return heuristic
+    # fallback to global map lookup
+    return heuristic_map.get(heuristic)
 
-def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alpha, beta, heuristic):
+def get_top_single_moves(board, possible_moves, player, opponent, heuristic_func, top_k=8):
     """
-    Minimax for Connect6: two stones per turn, alpha-beta pruning, heuristic evaluation.
+    Quickly score single moves (place a temporary stone, evaluate heuristic),
+    return top_k moves sorted by score descending (best for maximizing player).
     """
-    possible_moves = get_possible_moves(board)
+    scored = []
+    for (r, c) in possible_moves:
+        # place temporarily as player's move to evaluate
+        orig = board[r][c]
+        board[r][c] = player
+        try:
+            s = heuristic_func(board, player, opponent)
+        except Exception:
+            s = -math.inf
+        board[r][c] = orig
+        scored.append(((r, c), s))
+    # sort descending and keep top_k
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [m for m, _ in scored[:top_k]]
+
+def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alpha, beta, heuristic, top_k=8):
+    """
+    Safer minimax:
+      - heuristic: function or string key (resolved)
+      - top_k: limit single-move candidates to form pairs (reduces branching)
+    """
+    heuristic_func = resolve_heuristic(heuristic)
+    if heuristic_func is None:
+        raise ValueError("Unknown heuristic: {}".format(heuristic))
+
+    possible_moves = get_possible_moves(board)  # returns list of (r,c)
 
     # Terminal conditions
     if depth == 0 or not possible_moves:
-        return heuristic_map[heuristic](board, current_player, opponent), None
+        return heuristic_func(board, current_player, opponent), None
 
-    # Generate all combinations of 1 or 2 moves (Connect6 allows two stones per turn)
-    move_combinations = list(combinations(possible_moves, 2))
-    if not move_combinations:  # if only one empty cell left
-        move_combinations = [(move,) for move in possible_moves]
+    # Choose top single-move candidates to limit branching
+    # If few empties, just use them all
+    if len(possible_moves) <= top_k:
+        single_candidates = possible_moves
+    else:
+        single_candidates = get_top_single_moves(board, possible_moves, current_player if is_maximizing else opponent, opponent if is_maximizing else current_player, heuristic_func, top_k=top_k)
+
+    # Form combinations of two stones among chosen candidates
+    # if only one candidate available, fallback to single moves
+    move_combinations_iter = combinations(single_candidates, 2)
+    # If only single candidate or no pairs, we'll handle below
+    pair_list = list(move_combinations_iter)
+    if not pair_list:
+        pair_list = [(m,) for m in single_candidates]
 
     best_score = -math.inf if is_maximizing else math.inf
     best_move = None
 
-    for moves in move_combinations:
-        # Place stones
-        for r, c in moves:
-            board[r][c] = current_player if is_maximizing else opponent
+    for moves in pair_list:
+        # Place stones: if is_maximizing -> place current_player, else place opponent
+        placed = []
+        try:
+            for r, c in moves:
+                placed.append((r, c, board[r][c]))
+                board[r][c] = current_player if is_maximizing else opponent
 
-        score = minimax_connect6(
-            board, depth - 1, not is_maximizing, current_player, opponent, alpha, beta, heuristic
-        )[0]
+            score = minimax_connect6(
+                board, depth - 1, not is_maximizing, current_player, opponent, alpha, beta, heuristic, top_k
+            )[0]
 
-        # Undo moves
-        for r, c in moves:
-            board[r][c] = 0
+        finally:
+            # Undo moves robustly even if something fails
+            for r, c, orig in placed:
+                board[r][c] = orig
 
         # Maximize or minimize
         if is_maximizing:
@@ -246,7 +293,6 @@ def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alph
                 best_move = moves
             beta = min(beta, best_score)
 
-        # Alpha-beta pruning
         if beta <= alpha:
             break
 
