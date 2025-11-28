@@ -29,31 +29,25 @@ class GameLogic:
             self.moves_made = 0
 
     def ai_plays(self):
-        moves_placed = 0
         last_move = None
 
-        while moves_placed < self.max_moves_per_turn:
-            if self.mode == "heuristic2":
-                best_move = heuristic_move(self.board, self.mode)
-            else:
-                # Placeholder for other AI modes
-                best_move = None  
+        if self.mode == "heuristics2":
+            best_move = heuristic_move(self.board, self.mode)
+        else:
+            # Placeholder for other AI modes
+            best_move = None  
 
-            if best_move and self.is_valid_move(*best_move):
-                row, col = best_move
+        if best_move and self.is_valid_move(*best_move):
+            row, col = best_move
+            self.place_piece(row, col)
+            last_move = best_move
+        else:
+            # fallback random move if AI fails
+            empty_cells = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if self.board.board[r][c] == 0]
+            if empty_cells:
+                row, col = random.choice(empty_cells)
                 self.place_piece(row, col)
-                last_move = best_move
-                moves_placed += 1
-            else:
-                # fallback random move if AI fails
-                empty_cells = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if self.board.board[r][c] == 0]
-                if empty_cells:
-                    row, col = random.choice(empty_cells)
-                    self.place_piece(row, col)
-                    last_move = (row, col)
-                    moves_placed += 1
-                else:
-                    break
+                last_move = (row, col)
 
         return last_move
 

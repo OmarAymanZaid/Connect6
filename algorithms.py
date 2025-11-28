@@ -3,7 +3,8 @@ import time
 from itertools import combinations
 from board import Board
 
-def heuristic_1(board, player, opponent):
+
+def heuristics1(board, player, opponent):
     """
     Offensive Heuristic:
         - Player's potential winning lines
@@ -99,7 +100,7 @@ def heuristic_1(board, player, opponent):
     return score
 
 
-def heuristic2(board, player, opponent):
+def heuristics2(board, player, opponent):
     """
     Defensive Heuristic:
         - Prioritizes blocking opponent streaks
@@ -191,6 +192,10 @@ def heuristic2(board, player, opponent):
 
     return score
 
+heuristic_map = {
+    "heuristics1": heuristics1,
+    "heuristics2": heuristics2,
+}
 
 def get_possible_moves(board):
     """Return all empty positions as (row, col)."""
@@ -206,7 +211,7 @@ def minimax_connect6(board, depth, is_maximizing, current_player, opponent, alph
 
     # Terminal conditions
     if depth == 0 or not possible_moves:
-        return heuristic(board, current_player, opponent), None
+        return heuristic_map[heuristic](board, current_player, opponent), None
 
     # Generate all combinations of 1 or 2 moves (Connect6 allows two stones per turn)
     move_combinations = list(combinations(possible_moves, 2))

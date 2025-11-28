@@ -5,9 +5,9 @@ from gameLogic import GameLogic
 class GameGUI:
     def __init__(self, root, mode, board_size):
         self.root = root
+        self.root.title("Connect 6")
         self.mode = mode.lower()
         self.board_size = board_size
-        self.root.title("Connect 6")
 
         # Initialize game logic
         self.game_logic = GameLogic(mode=self.mode, user_board_size=self.board_size)
@@ -54,16 +54,15 @@ class GameGUI:
 
         # Check for draw
         if self.game_logic.check_draw():
-            messagebox.showinfo("Draw", "The game is a draw!")
+            self.declare_draw()
             return
 
         # If the player has placed 2 stones, switch player
         if self.game_logic.moves_made >= self.game_logic.max_moves_per_turn:
-            self.moves_made_this_turn = 0
             self.game_logic.switch_player()
 
             # AI turn
-            if self.mode != "pvp" and self.game_logic.current_player == 2:
+            if self.game_logic.current_player == 2:
                 self.handle_ai_turn()
 
     def place_piece(self, row, col):
@@ -77,10 +76,18 @@ class GameGUI:
         for _ in range(self.game_logic.max_moves_per_turn):
             row, col = self.game_logic.ai_plays()
             if row is not None and col is not None:
+
                 self.place_piece(row, col)
+
+                # Check for win
                 if self.game_logic.check_win(row, col):
                     self.declare_winner()
                     return
+                
+                # Check for draw
+                if self.game_logic.check_draw():
+                    self.declare_draw()
+                    return    
 
         # Switch back to player 1
         self.game_logic.switch_player()
@@ -91,7 +98,14 @@ class GameGUI:
         else:
             winner = f"Player {self.game_logic.current_player} wins!"
 
+        self.root.destroy()
         messagebox.showinfo("Game Over", winner)
+
+    def declare_draw(self):
+        draw = "It's a draw!"
+        self.root.destroy()
+        messagebox.showinfo("Game Over", draw)
+
 
     
 
@@ -113,7 +127,7 @@ class GameMenu:
         self.board_entry = tk.Entry(self.root, width=15, font=("Courier", 16))
         self.board_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
 
-        self.enter_button = tk.Button(self.root, text="Set", font=("Courier", 14, "bold"), bg="#4CAF50", fg="white", command=self.print_board_size)
+        self.enter_button = tk.Button(self.root, text="Set", font=("Courier", 14, "bold"), bg="#4CAF50", fg="white", command=self.read_board_size)
         self.enter_button.grid(row=1, column=2, padx=10, pady=10)
 
         # Game mode buttons
@@ -137,7 +151,7 @@ class GameMenu:
 
 
 
-    def print_board_size(self):
+    def read_board_size(self):
         """Validates and returns board size."""
         size_text = self.board_entry.get()
 
@@ -157,7 +171,7 @@ class GameMenu:
 
     def start_game(self, mode):
         """Starts GameGUI with a validated board size."""
-        board_size = self.print_board_size()
+        board_size = self.read_board_size()
 
         if board_size is None:
             return  # invalid input, stop
@@ -175,7 +189,7 @@ class GameMenu:
         self.start_game("alphabeta")
 
     def ai_Heuristic(self):
-        self.start_game("heuristics")
+        self.start_game("heuristics1")
 
     def ai_Heuristic2(self):
         self.start_game("heuristics2")
