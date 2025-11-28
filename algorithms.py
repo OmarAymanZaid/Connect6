@@ -146,7 +146,7 @@ def heuristic2(board, player, opponent):
     # Positional weight: weaker influence
     def positional_weight(row, col):
         center = board_size // 2
-        return ((center - abs(center - row)) + (center - abs(center - col))) // 2  # weaker than offensive
+        return ((center - abs(center - row)) + (center - abs(center - col)))  # weaker than offensive
 
     for row in range(board_size):
         for col in range(board_size):

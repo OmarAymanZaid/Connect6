@@ -95,7 +95,7 @@ class GameGUI:
 
     
 
-class UI:
+class GameMenu:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Connect 6")
@@ -117,10 +117,6 @@ class UI:
         self.enter_button.grid(row=1, column=2, padx=10, pady=10)
 
         # Game mode buttons
-        self.pvp_button = tk.Button(self.root, text="PVP", font=("Courier", 15, "bold"), bg="#f4b400", fg="white", width=15, command=self.start_pvp)
-        self.pvp_button.grid(row=2, column=0, columnspan=3, pady=(20, 15))
-
-        # AI buttons (organized in a grid)
         ai_button_style = {"font": ("Courier", 14, "bold"), "width": 15, "bg": "#1a73e8", "fg": "white", "padx": 5, "pady": 5}
 
         self.minimax_button = tk.Button(self.root, text="AI Minimax", command=self.ai_MiniMax, **ai_button_style)
@@ -172,9 +168,6 @@ class UI:
 
 
     # ---- Mode wrappers ---- #
-    def start_pvp(self):
-        self.start_game("pvp")
-
     def ai_MiniMax(self):
         self.start_game("minimax")
 
@@ -196,13 +189,13 @@ class UI:
         """Open a small credits popup window."""
         credits_win = tk.Toplevel(self.root)
         credits_win.title("Credits")
-        credits_win.geometry("350x250")
+        credits_win.geometry("450x350")
         credits_win.resizable(False, False)
 
         # Center text
         label = tk.Label(
             credits_win,
-            text="Connect6 Project\n\nDeveloped by:\n- Omar Ayman\n- Your Team Member #2\n- Your Team Member #3\n\nHelwan University",
+            text="Connect6 Project\n\nDeveloped by:\n- Omar Ayman\n- Asmaa Maher \n- Dana Mohamed \n- Abdelrahman Adel \n- Malk Mostafa \n- Yahia Mohamed\n\nHelwan University",
             font=("Courier", 14),
             justify="center"
         )
@@ -225,5 +218,5 @@ class UI:
 
 
 # Create and run the UI
-launch = UI()
+launch = GameMenu()
 launch.run()

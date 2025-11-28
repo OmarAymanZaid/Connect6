@@ -60,6 +60,9 @@ class GameLogic:
     def check_win(self, row, col):
         directions = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(1,1),(-1,1),(1,-1)]
         return any(self.count_in_direction(row, col, dr, dc) >= 6 for dr, dc in directions)
+    
+    def check_draw(self):
+        return all(self.board.board[r][c] != 0 for r in range(self.board_size) for c in range(self.board_size))
 
     def count_in_direction(self, row, col, dr, dc):
         count = 1  # Include the current piece
@@ -70,6 +73,3 @@ class GameLogic:
                 r += step * dr
                 c += step * dc
         return count
-
-    def check_draw(self):
-        return all(self.board.board[r][c] != 0 for r in range(self.board_size) for c in range(self.board_size))
