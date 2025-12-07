@@ -131,8 +131,8 @@ class GameMenu:
         # Game mode buttons
         ai_button_style = {"font": ("Courier", 14, "bold"), "width": 15, "bg": "#1a73e8", "fg": "white", "padx": 5, "pady": 5}
 
-        self.minimax_button = tk.Button(self.root, text="AI Minimax", command=self.ai_MiniMax, **ai_button_style)
-        self.minimax_button.grid(row=3, column=0, pady=10, padx=5)
+        # self.minimax_button = tk.Button(self.root, text="AI Minimax", command=self.ai_MiniMax, **ai_button_style)
+        # self.minimax_button.grid(row=3, column=0, pady=10, padx=5)
 
         self.alpha_beta_button = tk.Button(self.root, text="AI AlphaBeta", command=self.ai_AlphBeta, **ai_button_style)
         self.alpha_beta_button.grid(row=3, column=1, pady=10, padx=5)
@@ -180,8 +180,8 @@ class GameMenu:
 
 
     # ---- Mode wrappers ---- #
-    def ai_MiniMax(self):
-        self.start_game("minimax")
+    # def ai_MiniMax(self):
+    #     self.start_game("minimax")
 
     def ai_AlphBeta(self):
         self.start_game("alphabeta")

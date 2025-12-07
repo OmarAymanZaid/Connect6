@@ -1,6 +1,6 @@
 import random
 from board import Board
-from algorithms import heuristic_move
+from algorithms import heuristic_move, alphabeta
 
 class GameLogic:
     def __init__(self, mode, user_board_size):
@@ -34,6 +34,10 @@ class GameLogic:
         
         elif self.mode == "heuristics2":
             best_move = heuristic_move(self.board, self.mode, False) # False turns alphabeta off
+
+        elif self.mode == "alphabeta":
+            best_move = alphabeta(self.board, self.mode, True) # False turns alphabeta off
+
 
         else:
             best_move = None
