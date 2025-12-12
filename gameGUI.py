@@ -14,12 +14,17 @@ class GameGUI:
 
         # GUI settings
         self.cell_size = 30
+        # margin so stones drawn on intersections don't get clipped
+        self.margin = self.cell_size // 2
+
+        # Canvas size must include margins and spacing between intersections
+        canvas_size = self.margin * 2 + (self.board_size - 1) * self.cell_size
 
         # Create canvas
         self.canvas = tk.Canvas(self.root,
-                                width=self.board_size * self.cell_size,
-                                height=self.board_size * self.cell_size,
-                                bg="white")
+                width=canvas_size,
+                height=canvas_size,
+                bg="white")
         self.canvas.pack()
 
         # Draw initial grid
@@ -29,14 +34,22 @@ class GameGUI:
         self.canvas.bind("<Button-1>", self.handle_click)
 
     def draw_grid(self):
+        # Draw grid lines with a half-cell margin so intersections are inset
         for i in range(self.board_size):
-            x = i * self.cell_size
-            self.canvas.create_line(x, 0, x, self.board_size * self.cell_size, fill="black")
-            self.canvas.create_line(0, x, self.board_size * self.cell_size, x, fill="black")
+            x = self.margin + i * self.cell_size
+            self.canvas.create_line(x, self.margin, x, self.margin + (self.board_size - 1) * self.cell_size, fill="black")
+            self.canvas.create_line(self.margin, x, self.margin + (self.board_size - 1) * self.cell_size, x, fill="black")
 
 
     def handle_click(self, event):
-        row, col = event.y // self.cell_size, event.x // self.cell_size
+        # Map click to nearest intersection (grid line crossing)
+        col = int(round((event.x - self.margin) / self.cell_size))
+        row = int(round((event.y - self.margin) / self.cell_size))
+
+        # clamp to board indices
+        col = max(0, min(self.board_size - 1, col))
+        row = max(0, min(self.board_size - 1, row))
+
         self.logic(row, col)
 
 
@@ -66,10 +79,14 @@ class GameGUI:
 
     def place_piece(self, row, col):
         self.game_logic.place_piece(row, col)
-        x1, y1 = col * self.cell_size + 2, row * self.cell_size + 2
-        x2, y2 = (col + 1) * self.cell_size - 2, (row + 1) * self.cell_size - 2
+        # Draw stone centered on the intersection
+        cx = self.margin + col * self.cell_size
+        cy = self.margin + row * self.cell_size
+        r = max(6, self.cell_size // 3)
+        x1, y1 = cx - r, cy - r
+        x2, y2 = cx + r, cy + r
         color = "black" if self.game_logic.current_player == 1 else "green"
-        self.canvas.create_oval(x1, y1, x2, y2, fill=color)
+        self.canvas.create_oval(x1, y1, x2, y2, fill=color, outline="")
 
     def handle_ai_turn(self):
         moves = self.game_logic.ai_plays()
@@ -95,14 +112,20 @@ class GameGUI:
             winner = "AI wins!" if self.game_logic.current_player == 2 else "You Win!"
         else:
             winner = f"Player {self.game_logic.current_player} wins!"
-
-        self.root.destroy()
+        # Show message then close the window
         messagebox.showinfo("Game Over", winner)
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
 
     def declare_draw(self):
         draw = "It's a draw!"
-        self.root.destroy()
         messagebox.showinfo("Game Over", draw)
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
 
 
     
@@ -176,7 +199,12 @@ class GameMenu:
 
         new_root = tk.Tk()
         GameGUI(new_root, mode=mode, board_size=board_size)
-        self.root.destroy()
+        # Close the menu and run the new game loop
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
+        new_root.mainloop()
 
 
     # ---- Mode wrappers ---- #

@@ -29,15 +29,19 @@ class GameLogic:
             self.moves_made = 0
 
     def ai_plays(self):
+        # Map UI mode to algorithm calls. We have three AI variants:
+        # - minimax with heuristics1
+        # - minimax with heuristics2
+        # - alphabeta with heuristics3
         if self.mode == "heuristics1":
-            best_move = heuristic_move(self.board, self.mode, False) # False turns alphabeta off
-        
+            best_move = heuristic_move(self.board, "heuristics1", False)
+
         elif self.mode == "heuristics2":
-            best_move = heuristic_move(self.board, self.mode, False) # False turns alphabeta off
+            best_move = heuristic_move(self.board, "heuristics2", False)
 
         elif self.mode == "alphabeta":
-            best_move = alphabeta(self.board, self.mode, True) # False turns alphabeta off
-
+            # Use heuristics3 when running alphabeta
+            best_move = alphabeta(self.board, "heuristics3", True)
 
         else:
             best_move = None
