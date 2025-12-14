@@ -134,12 +134,13 @@ class GameMenu:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Connect 6")
-        self.root.geometry("650x600")
+        self.root.geometry("520x550")
 
 
         # Title label
         self.title_label = tk.Label(self.root, text="Connect6", font=("Courier", 30, "bold"), fg="#1a73e8")
         self.title_label.grid(row=0, column=0, columnspan=4, pady=(30, 20))
+
 
         # Board size label + entry
         self.board_size_label = tk.Label(self.root, text="Board size:", font=("Courier", 18))
@@ -151,27 +152,38 @@ class GameMenu:
         self.enter_button = tk.Button(self.root, text="Set", font=("Courier", 14, "bold"), bg="#4CAF50", fg="white", command=self.read_board_size)
         self.enter_button.grid(row=1, column=2, padx=10, pady=10)
 
+
         # Game mode buttons
-        ai_button_style = {"font": ("Courier", 14, "bold"), "width": 15, "bg": "#1a73e8", "fg": "white", "padx": 5, "pady": 5}
+        ai_button_style = {
+            "font": ("Courier", 14, "bold"),
+            "width": 15,
+            "bg": "#1a73e8",
+            "fg": "white",
+            "padx": 5,
+            "pady": 5
+        }
 
-        # self.minimax_button = tk.Button(self.root, text="AI Minimax", command=self.ai_MiniMax, **ai_button_style)
-        # self.minimax_button.grid(row=3, column=0, pady=10, padx=5)
+        self.heuristic1_button = tk.Button(self.root, text="AI Heuristic1", command=self.ai_heuristic1, **ai_button_style)
+        self.heuristic1_button.grid(row=3, column=0, pady=10, padx=10)
 
-        self.alpha_beta_button = tk.Button(self.root, text="AI AlphaBeta", command=self.ai_AlphBeta, **ai_button_style)
-        self.alpha_beta_button.grid(row=3, column=1, pady=10, padx=5)
+        self.heuristic2_button = tk.Button(self.root, text="AI Heuristic2", command=self.ai_heuristic2, **ai_button_style)
+        self.heuristic2_button.grid(row=3, column=1, pady=10, padx=10)
 
-        self.heuristic_button = tk.Button(self.root, text="AI Heuristic", command=self.ai_Heuristic, **ai_button_style)
-        self.heuristic_button.grid(row=3, column=2, pady=10, padx=5)
+        self.minimax_button = tk.Button(self.root, text="AI Alphabeta1", command=self.ai_alphabeta1, **ai_button_style)
+        self.minimax_button.grid(row=4, column=0, pady=10, padx=10)
 
-        self.heuristic2_button = tk.Button(self.root, text="AI Heuristic2", command=self.ai_Heuristic2, **ai_button_style)
-        self.heuristic2_button.grid(row=4, column=0, columnspan=3, pady=(10, 20))
+        self.alpha_beta_button = tk.Button(self.root, text="AI Alphabeta2", command=self.ai_alphabeta2, **ai_button_style)
+        self.alpha_beta_button.grid(row=4, column=1, pady=10, padx=10)
+
 
         # Credits button
         self.credits_button = tk.Button(self.root, text="Credits", font=("Courier", 14, "bold"), bg="#d93025", fg="white", width=15, command=self.credits)
         self.credits_button.grid(row=5, column=0, columnspan=3, pady=(10, 30))
 
 
-
+    # -------------------------------------------------------------------------------
+    # Methods
+    # -------------------------------------------------------------------------------
     def read_board_size(self):
         """Validates and returns board size."""
         size_text = self.board_entry.get()
@@ -199,7 +211,6 @@ class GameMenu:
 
         new_root = tk.Tk()
         GameGUI(new_root, mode=mode, board_size=board_size)
-        # Close the menu and run the new game loop
         try:
             self.root.destroy()
         except Exception:
@@ -208,17 +219,17 @@ class GameMenu:
 
 
     # ---- Mode wrappers ---- #
-    # def ai_MiniMax(self):
-    #     self.start_game("minimax")
-
-    def ai_AlphBeta(self):
-        self.start_game("alphabeta")
-
-    def ai_Heuristic(self):
+    def ai_heuristic1(self):
         self.start_game("heuristics1")
 
-    def ai_Heuristic2(self):
+    def ai_heuristic2(self):
         self.start_game("heuristics2")
+
+    def ai_alphabeta1(self):
+        self.start_game("alphabeta1")
+    
+    def ai_alphabeta2(self):
+        self.start_game("alphabeta2")
 
 
     def run(self):
