@@ -12,8 +12,10 @@ class GameGUI:
         # Initialize game logic
         self.game_logic = GameLogic(mode=self.mode, user_board_size=self.board_size)
 
+
         # GUI settings
         self.cell_size = 30
+
         # margin so stones drawn on intersections don't get clipped
         self.margin = self.cell_size // 2
 
@@ -32,6 +34,7 @@ class GameGUI:
 
         # Bind mouse clicks
         self.canvas.bind("<Button-1>", self.handle_click)
+
 
     def draw_grid(self):
         # Draw grid lines with a half-cell margin so intersections are inset
@@ -58,7 +61,7 @@ class GameGUI:
             return
 
         # Place player's stone
-        self.place_piece(row, col)
+        self.draw_piece(row, col)
 
         # Check for win or draw after placing
         if self.game_logic.check_win(row, col):
@@ -77,7 +80,7 @@ class GameGUI:
                 self.handle_ai_turn()
 
 
-    def place_piece(self, row, col):
+    def draw_piece(self, row, col):
         self.game_logic.place_piece(row, col)
         # Draw stone centered on the intersection
         cx = self.margin + col * self.cell_size
@@ -92,7 +95,7 @@ class GameGUI:
         moves = self.game_logic.ai_plays()
 
         for (row, col) in moves:
-            self.place_piece(row, col)
+            self.draw_piece(row, col)
 
             # Check win
             if self.game_logic.check_win(row, col):
