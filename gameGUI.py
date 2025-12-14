@@ -169,11 +169,11 @@ class GameMenu:
         self.heuristic2_button = tk.Button(self.root, text="AI Heuristic2", command=self.ai_heuristic2, **ai_button_style)
         self.heuristic2_button.grid(row=3, column=1, pady=10, padx=10)
 
-        self.minimax_button = tk.Button(self.root, text="AI Alphabeta1", command=self.ai_alphabeta1, **ai_button_style)
-        self.minimax_button.grid(row=4, column=0, pady=10, padx=10)
+        self.alpha_beta1_button = tk.Button(self.root, text="AI Alphabeta1", command=self.ai_alphabeta1, **ai_button_style)
+        self.alpha_beta1_button.grid(row=4, column=0, pady=10, padx=10)
 
-        self.alpha_beta_button = tk.Button(self.root, text="AI Alphabeta2", command=self.ai_alphabeta2, **ai_button_style)
-        self.alpha_beta_button.grid(row=4, column=1, pady=10, padx=10)
+        self.alpha_beta2_button = tk.Button(self.root, text="AI Alphabeta2", command=self.ai_alphabeta2, **ai_button_style)
+        self.alpha_beta2_button.grid(row=4, column=1, pady=10, padx=10)
 
 
         # Credits button

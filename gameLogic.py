@@ -1,6 +1,6 @@
 import random
 from board import Board
-from algorithms import heuristic_move, alphabeta
+from algorithms import heuristic_move
 
 class GameLogic:
     def __init__(self, mode, user_board_size):
@@ -32,16 +32,20 @@ class GameLogic:
         # Map UI mode to algorithm calls. We have three AI variants:
         # - minimax with heuristics1
         # - minimax with heuristics2
-        # - alphabeta with heuristics3
+        # - minimax with heuristics1 + alphabeta
+        # - minimax with heuristics2 + alphabeta
+
         if self.mode == "heuristics1":
             best_move = heuristic_move(self.board, "heuristics1", False)
 
         elif self.mode == "heuristics2":
             best_move = heuristic_move(self.board, "heuristics2", False)
 
-        elif self.mode == "alphabeta":
-            # Use heuristics3 when running alphabeta
-            best_move = alphabeta(self.board, "heuristics3", True)
+        elif self.mode == "alphabeta1":
+            best_move = heuristic_move(self.board, "heuristics1", True)
+
+        elif self.mode == "alphabeta2":
+            best_move = heuristic_move(self.board, "heuristics2", True)
 
         else:
             best_move = None

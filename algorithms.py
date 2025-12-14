@@ -1,4 +1,5 @@
 import math
+import time
 from board import Board
 from itertools import combinations
 import traceback
@@ -191,111 +192,9 @@ def heuristics2(board, player, opponent):
 
     return score
 
-def heuristics3(board, player, opponent):
-    """
-    Combined Heuristic for Connect-6:
-        - Strong defense against opponent threats
-        - Strong but controlled offense
-        - Balanced positional advantage
-        - Immediate win/loss detection
-    """
-
-    board_size = len(board)
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
-    score = 0
-
-    # Count consecutive stones in both directions and check open ends
-    def count_consecutive(row, col, dr, dc, target):
-        count = 1
-        open_ends = 0
-
-        # Forward
-        r, c = row + dr, col + dc
-        while 0 <= r < board_size and 0 <= c < board_size:
-            if board[r][c] == target:
-                count += 1
-                r += dr
-                c += dc
-            elif board[r][c] == 0:
-                open_ends += 1
-                break
-            else:
-                break
-
-        # Backward
-        r, c = row - dr, col - dc
-        while 0 <= r < board_size and 0 <= c < board_size:
-            if board[r][c] == target:
-                count += 1
-                r -= dr
-                c -= dc
-            elif board[r][c] == 0:
-                open_ends += 1
-                break
-            else:
-                break
-
-        return count, open_ends
-
-    # Balanced positional weight (between the two heuristics)
-    def positional_weight(row, col):
-        center = board_size // 2
-        return ((center - abs(center - row)) + (center - abs(center - col)))
-
-    # Evaluation
-    for row in range(board_size):
-        for col in range(board_size):
-            cell = board[row][col]
-            if cell != 0:
-
-                for dr, dc in directions:
-                    count, open_ends = count_consecutive(row, col, dr, dc, cell)
-
-                    # Terminal evaluation
-                    if count >= 6:
-                        return 100000 if cell == player else -100000
-
-                    # -----------------------------------------------------------------
-                    # Combined scoring:
-                    #   - Opponent threats are weighted using the defensive heuristic's scale
-                    #   - Player strengths use the offensive heuristic's scale
-                    # -----------------------------------------------------------------
-
-                    if cell == opponent:
-                        # Strong defensive penalties
-                        if count == 5:
-                            score -= 12000 * open_ends
-                        elif count == 4:
-                            score -= 3000 * open_ends
-                        elif count == 3:
-                            score -= 700 * open_ends
-                        elif count == 2:
-                            score -= 120 * open_ends
-
-                    elif cell == player:
-                        # Strong but controlled offensive scoring
-                        if count == 5:
-                            score += 10000 * open_ends
-                        elif count == 4:
-                            score += 1500 * open_ends
-                        elif count == 3:
-                            score += 250 * open_ends
-                        elif count == 2:
-                            score += 40 * open_ends
-
-            # Positional control (moderate strength)
-            if cell == player:
-                score += positional_weight(row, col) * 1.5
-            elif cell == opponent:
-                score -= positional_weight(row, col) * 1.5
-
-    return score
-
-
 heuristic_map = {
     "heuristics1": heuristics1,
     "heuristics2": heuristics2,
-    "heuristics3": heuristics3,
 }
 
 def get_possible_moves(board):
@@ -399,7 +298,7 @@ def minimax_connect6(board, depth, is_maximizing, current_player, opponent,alpha
     return best_score, best_move
 
 
-def heuristic_move(board, heuristic, use_alpha_beta=True):
+def heuristic_move(board, heuristic, use_alpha_beta):
     _, best_move = minimax_connect6(
         board.board,
         depth=2,
@@ -412,9 +311,10 @@ def heuristic_move(board, heuristic, use_alpha_beta=True):
         use_alpha_beta=use_alpha_beta
     )
     return best_move
-# -------------------------
+
+# -------------------------------------------------------------------------------
 # Instrumentation: node counter
-# -------------------------
+# --------------------------------------------------------------------------------
 nodes_expanded = 0
 
 def reset_node_counter():
@@ -434,7 +334,6 @@ def run_search_once(board_obj, depth=2, heuristic="heuristics3", use_alpha_beta=
       "time": seconds_elapsed
     }
     """
-    from algorithms import minimax_connect6  # ensure minimax is available
     reset_node_counter()
     start = time.perf_counter()
 
@@ -453,16 +352,3 @@ def run_search_once(board_obj, depth=2, heuristic="heuristics3", use_alpha_beta=
     elapsed = time.perf_counter() - start
     nodes = get_node_count()
     return {"score": score, "move": move, "nodes": nodes, "time": elapsed}
-def alphabeta(board, heuristic, use_alpha_beta=True):
-    _, best_move = minimax_connect6(
-        board.board,
-        depth=2,
-        is_maximizing=True,
-        current_player=2,
-        opponent=1,
-        alpha=-math.inf,
-        beta=math.inf,
-        heuristic=heuristic,
-        use_alpha_beta=use_alpha_beta
-    )
-    return best_move
