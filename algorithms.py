@@ -147,7 +147,7 @@ def heuristics2(board, player, opponent):
     # Positional weight: weaker influence
     def positional_weight(row, col):
         center = board_size // 2
-        return ((center - abs(center - row)) + (center - abs(center - col)))  # weaker than offensive
+        return ((center - abs(center - row)) + (center - abs(center - col)))
 
     for row in range(board_size):
         for col in range(board_size):
@@ -311,44 +311,3 @@ def heuristic_move(board, heuristic, use_alpha_beta):
         use_alpha_beta=use_alpha_beta
     )
     return best_move
-
-# -------------------------------------------------------------------------------
-# Instrumentation: node counter
-# --------------------------------------------------------------------------------
-nodes_expanded = 0
-
-def reset_node_counter():
-    global nodes_expanded
-    nodes_expanded = 0
-
-def get_node_count():
-    return nodes_expanded
-
-def run_search_once(board_obj, depth=2, heuristic="heuristics3", use_alpha_beta=True, is_maximizing=True):
-    """
-    Runs one search on a board (Board instance) and returns:
-    {
-      "score": best_score,
-      "move": best_move,
-      "nodes": nodes_expanded_during_search,
-      "time": seconds_elapsed
-    }
-    """
-    reset_node_counter()
-    start = time.perf_counter()
-
-    score, move = minimax_connect6(
-        board_obj.board,
-        depth=depth,
-        is_maximizing=is_maximizing,
-        current_player=2 if is_maximizing else 1,
-        opponent=1 if is_maximizing else 2,
-        alpha=-float("inf"),
-        beta=float("inf"),
-        heuristic=heuristic,
-        use_alpha_beta=use_alpha_beta
-    )
-
-    elapsed = time.perf_counter() - start
-    nodes = get_node_count()
-    return {"score": score, "move": move, "nodes": nodes, "time": elapsed}
