@@ -29,37 +29,48 @@ class GameLogic:
             self.moves_made = 0
 
     def ai_plays(self):
-        moves_placed = 0
-        last_move = None
+        
+        if self.mode == "heuristics1":
+            best_move = heuristic_move(self.board, "heuristics1", False)
 
-        while moves_placed < self.max_moves_per_turn:
-            if self.mode == "heuristic2":
-                best_move = heuristic_move(self.board, self.mode)
-            else:
-                # Placeholder for other AI modes
-                best_move = None  
+        elif self.mode == "heuristics2":
+            best_move = heuristic_move(self.board, "heuristics2", False)
 
-            if best_move and self.is_valid_move(*best_move):
-                row, col = best_move
-                self.place_piece(row, col)
-                last_move = best_move
-                moves_placed += 1
-            else:
-                # fallback random move if AI fails
-                empty_cells = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if self.board.board[r][c] == 0]
-                if empty_cells:
-                    row, col = random.choice(empty_cells)
-                    self.place_piece(row, col)
-                    last_move = (row, col)
-                    moves_placed += 1
-                else:
-                    break
+        elif self.mode == "alphabeta1":
+            best_move = heuristic_move(self.board, "heuristics1", True)
 
-        return last_move
+        elif self.mode == "alphabeta2":
+            best_move = heuristic_move(self.board, "heuristics2", True)
+
+        else:
+            best_move = None
+
+        # Fallback: no best move
+        if not best_move:
+            empty = [(r, c) for r in range(self.board_size) for c in range(self.board_size)
+                    if self.board.board[r][c] == 0]
+            if empty:
+                return [random.choice(empty)]   # return list of 1 move
+            return []
+
+        # best_move is tuple of tuples → convert to list
+        move_list = list(best_move)
+
+        # Validate only
+        valid_moves = []
+        for r, c in move_list:
+            if self.is_valid_move(r, c):
+                valid_moves.append((r, c))
+
+        return valid_moves
+
 
     def check_win(self, row, col):
         directions = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(1,1),(-1,1),(1,-1)]
         return any(self.count_in_direction(row, col, dr, dc) >= 6 for dr, dc in directions)
+    
+    def check_draw(self):
+        return all(self.board.board[r][c] != 0 for r in range(self.board_size) for c in range(self.board_size))
 
     def count_in_direction(self, row, col, dr, dc):
         count = 1  # Include the current piece
@@ -70,6 +81,3 @@ class GameLogic:
                 r += step * dr
                 c += step * dc
         return count
-
-    def check_draw(self):
-        return all(self.board.board[r][c] != 0 for r in range(self.board_size) for c in range(self.board_size))
