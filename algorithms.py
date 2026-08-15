@@ -144,10 +144,10 @@ def heuristics2(board, player, opponent):
 
         return count, open_ends
 
-    # Positional weight: weaker influence
+    # Positional weight:
     def positional_weight(row, col):
         center = board_size // 2
-        return ((center - abs(center - row)) + (center - abs(center - col)))
+        return ((center - abs(center - row)) + (center - abs(center - col))) // 2
 
     for row in range(board_size):
         for col in range(board_size):
@@ -167,13 +167,13 @@ def heuristics2(board, player, opponent):
                     # Defensive scoring: opponent threats prioritized
                     if current_player == opponent:
                         if count == 5:
-                            score -= 10000 * open_ends  # big threat
+                            score -= 30000 * open_ends  # big threat
                         elif count == 4:
-                            score -= 2000 * open_ends
+                            score -= 3000 * open_ends
                         elif count == 3:
-                            score -= 500 * open_ends
+                            score -= 300 * open_ends
                         elif count == 2:
-                            score -= 100 * open_ends
+                            score -= 30 * open_ends
                     elif current_player == player:
                         if count == 5:
                             score += 5000 * open_ends  # secondary
@@ -197,10 +197,12 @@ heuristic_map = {
     "heuristics2": heuristics2,
 }
 
+
 def get_possible_moves(board):
     """Return all empty positions as (row, col)."""
     board_size = len(board)
     return [(r, c) for r in range(board_size) for c in range(board_size) if board[r][c] == 0]
+
 
 # Allow heuristic to be either function or string key
 def resolve_heuristic(heuristic):
@@ -208,6 +210,7 @@ def resolve_heuristic(heuristic):
         return heuristic
     # fallback to global map lookup
     return heuristic_map.get(heuristic)
+
 
 def get_top_single_moves(board, possible_moves, player, opponent, heuristic_func, top_k=8):
     """
@@ -229,21 +232,26 @@ def get_top_single_moves(board, possible_moves, player, opponent, heuristic_func
     scored.sort(key=lambda x: x[1], reverse=True)
     return [m for m, _ in scored[:top_k]]
 
+
 def minimax_connect6(board, depth, is_maximizing, current_player, opponent,alpha, beta, heuristic, top_k=8, use_alpha_beta=True):
     """
     Safer minimax:
       - heuristic: function or string key (resolved)
       - top_k: limit single-move candidates to form pairs (reduces branching)
     """
+
     heuristic_func = resolve_heuristic(heuristic)
     if heuristic_func is None:
         raise ValueError("Unknown heuristic: {}".format(heuristic))
 
+
     possible_moves = get_possible_moves(board)  # returns list of (r,c)
+
 
     # Terminal conditions
     if depth == 0 or not possible_moves:
         return heuristic_func(board, current_player, opponent), None
+
 
     # Choose top single-move candidates to limit branching
     # If few empties, just use them all
@@ -252,13 +260,14 @@ def minimax_connect6(board, depth, is_maximizing, current_player, opponent,alpha
     else:
         single_candidates = get_top_single_moves(board, possible_moves, current_player if is_maximizing else opponent, opponent if is_maximizing else current_player, heuristic_func, top_k=top_k)
 
+
     # Form combinations of two stones among chosen candidates
     # if only one candidate available, fallback to single moves
     move_combinations_iter = combinations(single_candidates, 2)
     # If only single candidate or no pairs, we'll handle below
     pair_list = list(move_combinations_iter)
     if not pair_list:
-        pair_list = [(m,) for m in single_candidates]
+        pair_list = [(m,) for m in single_candidates] # [((r1, c1), (r2, c2))] -> [((r, c),)]
 
     best_score = -math.inf if is_maximizing else math.inf
     best_move = None
